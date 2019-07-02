@@ -10,6 +10,10 @@ class MyGame
 {
 private:
 	static constexpr float BackscreenDistance = 5.f;
+	static constexpr float BacksphereRange = 7.5f;
+
+	bool backMode = false;
+
 	// デバッグカメラ
 	std::unique_ptr<DebugCamera> m_pDebugCamera;
 	// グリッド床

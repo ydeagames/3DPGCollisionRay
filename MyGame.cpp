@@ -17,7 +17,7 @@ MyGame::~MyGame()
 {
 }
 
-void MyGame::Initialize(GameContext & context)
+void MyGame::Initialize(GameContext& context)
 {
 	// デバッグカメラ作成
 	m_pDebugCamera = std::make_unique<DebugCamera>();
@@ -56,12 +56,16 @@ void MyGame::Initialize(GameContext & context)
 	}
 }
 
-void MyGame::Update(GameContext & context)
+void MyGame::Update(GameContext& context)
 {
 	Input::Update();
 	m_pDebugCamera->update();
 	context.GetCamera().view = m_pDebugCamera->getViewMatrix();
 
+	if (Input::GetMouseButtonDown(Input::Buttons::MouseRight))
+		backMode = !backMode;
+
+	if (!backMode)
 	{
 		auto ray = context.GetCamera().ScreenPointToRay(Input::GetMousePosition());
 		auto plane = Plane(Vector3::Forward * BackscreenDistance, Vector3::Forward);
@@ -73,6 +77,17 @@ void MyGame::Update(GameContext & context)
 			m_ray->posB = Vector3::Lerp(m_ray->posB, raypos, .1f);
 		}
 	}
+	else
+	{
+		auto ray = context.GetCamera().ScreenPointToRay(Input::GetMousePosition());
+		auto plane = BoundingSphere(Vector3::Zero, BacksphereRange);
+		float dist;
+		if (ray.Intersects(plane, dist))
+		{
+			auto raypos = ray.position + ray.direction * dist;
+			m_ray->posB = Vector3::Lerp(m_ray->posB, raypos, .1f);
+		}
+	}
 
 	// オブジェクトの更新
 	for (auto& obj : m_objects)
@@ -81,10 +96,18 @@ void MyGame::Update(GameContext & context)
 	}
 }
 
-void MyGame::Render(GameContext & context)
+void MyGame::Render(GameContext& context)
 {
 	m_pGridFloor->draw(context.GetDR().GetD3DDeviceContext(), context.GetCamera().view, context.GetCamera().projection);
-	m_pGridFloor->draw(context.GetDR().GetD3DDeviceContext(), context.GetCamera().view, context.GetCamera().projection, Colors::Turquoise, Matrix::CreateRotationX(XMConvertToRadians(90)) * Matrix::CreateTranslation(Vector3::Forward * BackscreenDistance));
+	if (!backMode)
+	{
+		m_pGridFloor->draw(context.GetDR().GetD3DDeviceContext(), context.GetCamera().view, context.GetCamera().projection, Colors::Turquoise, Matrix::CreateRotationX(XMConvertToRadians(90)) * Matrix::CreateTranslation(Vector3::Forward * BackscreenDistance));
+	}
+	else
+	{
+		static auto geo = GeometricPrimitive::CreateSphere(context.GetDR().GetD3DDeviceContext());
+		geo->Draw(Matrix::CreateScale(Vector3(BacksphereRange) * 2.f), context.GetCamera().view, context.GetCamera().projection, Colors::Turquoise, nullptr, true);
+	}
 
 	// オブジェクトの描画
 	for (auto& obj : m_objects)
