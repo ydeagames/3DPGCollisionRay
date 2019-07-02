@@ -10,7 +10,7 @@ struct Material
 };
 
 struct ObjectShape;
-struct RayShape;
+struct LineShape;
 struct BoxShape;
 struct SphereShape;
 
@@ -19,17 +19,17 @@ struct ObjectShape
 	Material						material;
 
 	virtual bool IsHit(const ObjectShape& other) const = 0;
-	virtual bool IsHit(const RayShape& other) const { return false; }
+	virtual bool IsHit(const LineShape& other) const { return false; }
 	virtual bool IsHit(const BoxShape& other) const { return false; }
 	virtual bool IsHit(const SphereShape& other) const { return false; }
 
 	virtual void Draw(GameContext& context) const = 0;
 };
 
-struct RayShape : public ObjectShape
+struct LineShape : public ObjectShape
 {
-	DirectX::SimpleMath::Vector3 pos;
-	DirectX::SimpleMath::Vector3 dir;
+	DirectX::SimpleMath::Vector3 posA;
+	DirectX::SimpleMath::Vector3 posB;
 
 	virtual bool IsHit(const ObjectShape& other) const { return other.IsHit(*this); }
 	virtual void Draw(GameContext& context) const override;
@@ -41,7 +41,7 @@ struct BoxShape : public ObjectShape
 	DirectX::SimpleMath::Vector3 ext;
 
 	virtual bool IsHit(const ObjectShape& other) const { return other.IsHit(*this); }
-	virtual bool IsHit(const RayShape& other) const override;
+	virtual bool IsHit(const LineShape& other) const override;
 	virtual void Draw(GameContext& context) const override;
 };
 
@@ -51,7 +51,7 @@ struct SphereShape : public ObjectShape
 	float						 radius;
 
 	virtual bool IsHit(const ObjectShape& other) const { return other.IsHit(*this); }
-	virtual bool IsHit(const RayShape& other) const override;
+	virtual bool IsHit(const LineShape& other) const override;
 	virtual void Draw(GameContext& context) const override;
 };
 
@@ -62,6 +62,6 @@ struct CapsuleShape : public ObjectShape
 	float						 radius;
 
 	virtual bool IsHit(const ObjectShape& other) const { return other.IsHit(*this); }
-	virtual bool IsHit(const RayShape& other) const override;
+	virtual bool IsHit(const LineShape& other) const override;
 	virtual void Draw(GameContext& context) const override;
 };

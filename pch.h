@@ -67,6 +67,7 @@
 #include <algorithm>
 #include <queue>
 #include <deque>
+#include <array>
 
 // DirectXTK
 #include <Keyboard.h>

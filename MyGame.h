@@ -17,7 +17,7 @@ private:
 
 private:
 	// オブジェクト関連
-	std::unique_ptr<RayShape> m_ray;
+	std::unique_ptr<LineShape> m_ray;
 	std::vector<std::unique_ptr<ObjectShape>> m_objects;	// オブジェクト
 
 public:

@@ -26,8 +26,8 @@ void MyGame::Initialize(GameContext & context)
 
 	// オブジェクトの処理
 	{
-		auto object = std::make_unique<RayShape>();
-		object->pos = Vector3(0, 1, 5);
+		auto object = std::make_unique<LineShape>();
+		object->posA = Vector3(0, 1, 5);
 		object->material.color = Colors::Black;
 		m_ray = std::move(object);
 	}
@@ -70,7 +70,7 @@ void MyGame::Update(GameContext & context)
 		{
 			auto raypos = ray.position + ray.direction * dist;
 			raypos.Clamp(Vector3(-5, -5, -BackscreenDistance), Vector3(5, 5, -BackscreenDistance));
-			m_ray->dir = Vector3::Lerp(m_ray->pos + m_ray->dir, raypos, .1f) - m_ray->pos;
+			m_ray->posB = Vector3::Lerp(m_ray->posB, raypos, .1f);
 		}
 	}
 
