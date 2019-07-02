@@ -14,6 +14,10 @@ private:
 
 	bool backMode = false;
 
+	// フォント
+	std::unique_ptr<DirectX::SpriteFont> m_font;
+	std::unique_ptr<DirectX::SpriteBatch> m_batch;
+
 	// デバッグカメラ
 	std::unique_ptr<DebugCamera> m_pDebugCamera;
 	// グリッド床

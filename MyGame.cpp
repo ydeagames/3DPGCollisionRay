@@ -24,6 +24,10 @@ void MyGame::Initialize(GameContext& context)
 	// グリッド床作成
 	m_pGridFloor = std::make_unique<GridFloor>(context.GetDR().GetD3DDevice(), context.GetDR().GetD3DDeviceContext(), &context.GetStates(), 10.0f, 10);
 
+	// フォント
+	m_font = std::make_unique<SpriteFont>(context.GetDR().GetD3DDevice(), L"logofont.spritefont");
+	m_batch = std::make_unique<SpriteBatch>(context.GetDR().GetD3DDeviceContext());
+
 	// オブジェクトの処理
 	{
 		auto object = std::make_unique<LineShape>();
@@ -64,7 +68,6 @@ void MyGame::Update(GameContext& context)
 
 	if (Input::GetMouseButtonDown(Input::Buttons::MouseRight))
 		backMode = !backMode;
-
 	if (!backMode)
 	{
 		auto ray = context.GetCamera().ScreenPointToRay(Input::GetMousePosition());
@@ -108,6 +111,14 @@ void MyGame::Render(GameContext& context)
 		static auto geo = GeometricPrimitive::CreateSphere(context.GetDR().GetD3DDeviceContext());
 		geo->Draw(Matrix::CreateScale(Vector3(BacksphereRange) * 2.f), context.GetCamera().view, context.GetCamera().projection, Colors::Turquoise, nullptr, true);
 	}
+	std::wostringstream sb;
+	sb << L"[操作方法]" << std::endl;
+	sb << L"  2つの操作モードがあり、右クリックで切り替えます。" << std::endl;
+	sb << (!backMode ? L"->" : L"  ") << L"平面モード: Rayの先端はカーソル上の平面を移動します" << std::endl;
+	sb << (backMode ? L"->" : L"  ") << L"球体モード: Rayの先端はカーソル上の球体を移動します (カメラを引くとRayはカメラに近いところに移動します)" << std::endl;
+	m_batch->Begin();
+	m_font->DrawString(m_batch.get(), sb.str().c_str(), Vector3::Zero, Colors::White, 0, Vector3::Zero, Vector3(.5f));
+	m_batch->End();
 
 	// オブジェクトの描画
 	for (auto& obj : m_objects)
