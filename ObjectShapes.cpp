@@ -10,9 +10,12 @@ using namespace DirectX::SimpleMath;
 void RayShape::Draw(GameContext & context) const
 {
 	static auto batch = std::make_unique<PrimitiveBatch<VertexPositionColor>>(context.GetDR().GetD3DDeviceContext());
+	static auto geo = GeometricPrimitive::CreateCube(context.GetDR().GetD3DDeviceContext());
 	batch->Begin();
 	batch->DrawLine(VertexPositionColor(pos, material.color), VertexPositionColor(pos + dir, material.color));
 	batch->End();
+	geo->Draw(Matrix::CreateScale(Vector3(.05f)) * Matrix::CreateTranslation(pos), context.GetCamera().view, context.GetCamera().projection, material.color, nullptr, material.wireframe);
+	geo->Draw(Matrix::CreateScale(Vector3(.05f)) * Matrix::CreateTranslation(pos + dir), context.GetCamera().view, context.GetCamera().projection, material.color, nullptr, material.wireframe);
 }
 
 bool BoxShape::IsHit(const RayShape & other) const

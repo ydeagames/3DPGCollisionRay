@@ -39,10 +39,8 @@ GridFloor::~GridFloor()
 }
 
 // 描画
-void GridFloor::draw(ID3D11DeviceContext* context, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj, DirectX::GXMVECTOR color)
+void GridFloor::draw(ID3D11DeviceContext* context, DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj, DirectX::GXMVECTOR color, DirectX::SimpleMath::Matrix world)
 {
-	DirectX::SimpleMath::Matrix world;
-
 	context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
 	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 
