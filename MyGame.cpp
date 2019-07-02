@@ -10,24 +10,33 @@ using namespace DirectX::SimpleMath;
 void MyGame::Initialize(GameContext & context)
 {
 	// オブジェクトの処理
-	m_ray = std::make_unique<RayShape>();
-	m_ray->pos = Vector3(0, 1, -5);
-
-	// オブジェクトの処理
-	auto object = std::make_unique<SphereShape>();
-	object->pos = Vector3::Zero;
-	object->radius = .5f;
-	m_objects.emplace_back(std::move(object));
-
-	// オブジェクト作成
-	m_pObject1 = GeometricPrimitive::CreateSphere(context.GetDR().GetD3DDeviceContext());
-	m_pObject2 = CapsulePrimitive::Create(context.GetDR().GetD3DDeviceContext());
-	m_pObject3 = GeometricPrimitive::CreateBox(context.GetDR().GetD3DDeviceContext(), SimpleMath::Vector3::One);
-
-	// オブジェクトの初期座標設定
-	m_object1Pos = SimpleMath::Vector3(2.0f, 0.0f, 0.0f);
-	m_object2Pos = SimpleMath::Vector3(-2.0f, 0.0f, 0.0f);
-	m_object3Pos = SimpleMath::Vector3(0.0f, 0.0f, 0.0f);
+	{
+		m_ray = std::make_unique<RayShape>();
+		m_ray->pos = Vector3(0, 1, -5);
+	}
+	{
+		auto object = std::make_unique<SphereShape>();
+		object->pos = Vector3(2.0f, 0.0f, 0.0f);
+		object->radius = .5f;
+		object->material.color = Colors::Red;
+		m_objects.emplace_back(std::move(object));
+	}
+	{
+		auto object = std::make_unique<CapsuleShape>();
+		auto pos = Vector3(-2.0f, 0.0f, 0.0f);
+		object->posA = pos + Vector3::Up * .5f;
+		object->posB = pos + Vector3::Down * .5f;
+		object->radius = .5f;
+		object->material.color = Colors::Blue;
+		m_objects.emplace_back(std::move(object));
+	}
+	{
+		auto object = std::make_unique<BoxShape>();
+		object->pos = Vector3(0.0f, 0.0f, 0.0f);
+		object->ext = Vector3::One * .5f;
+		object->material.color = Colors::Green;
+		m_objects.emplace_back(std::move(object));
+	}
 }
 
 void MyGame::Update(GameContext & context)
@@ -59,12 +68,6 @@ void MyGame::Update(GameContext & context)
 		{
 		}
 	}
-
-	// オブジェクトの更新
-	m_object1Matrix = SimpleMath::Matrix::CreateTranslation(m_object1Pos);
-	m_object2Matrix = SimpleMath::Matrix::CreateTranslation(m_object2Pos);
-	m_object3Matrix = SimpleMath::Matrix::CreateTranslation(m_object3Pos);
-
 }
 
 void MyGame::Render(GameContext & context)
@@ -72,17 +75,9 @@ void MyGame::Render(GameContext & context)
 	// オブジェクトの描画
 	for (auto& obj : m_objects)
 		obj->Draw(context);
-
-	// オブジェクトの描画
-	m_pObject1->Draw(m_object1Matrix, context.GetCamera().view, context.GetCamera().projection, Colors::Red);
-	m_pObject2->Draw(m_object2Matrix, context.GetCamera().view, context.GetCamera().projection, Colors::Blue);
-	m_pObject3->Draw(m_object3Matrix, context.GetCamera().view, context.GetCamera().projection, Colors::Green);
-
+	m_ray->Draw(context);
 }
 
 void MyGame::Finalize(GameContext & context)
 {
-	m_pObject1.reset();
-	m_pObject2.reset();
-
 }

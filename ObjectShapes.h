@@ -4,8 +4,8 @@ class GameContext;
 
 struct Material
 {
-	DirectX::SimpleMath::Vector4	m_objectColor = DirectX::Colors::White;		// オブジェクトの色
-	bool							m_objectWireframe = false;						// オブジェクトがワイヤーフレームか
+	DirectX::SimpleMath::Vector4	color = DirectX::Colors::White;		// オブジェクトの色
+	bool							wireframe = false;						// オブジェクトがワイヤーフレームか
 	//bool							m_objectAlpha		= false;						// オブジェクトが半透明か
 };
 
