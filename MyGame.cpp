@@ -113,9 +113,10 @@ void MyGame::Render(GameContext& context)
 	}
 	std::wostringstream sb;
 	sb << L"[操作方法]" << std::endl;
-	sb << L"  2つの操作モードがあり、右クリックで切り替えます。" << std::endl;
+	sb << L"  2つの操作モードがあり、右クリックで切り替えます" << std::endl;
 	sb << (!backMode ? L"->" : L"  ") << L"平面モード: Rayの先端はカーソル上の平面を移動します" << std::endl;
 	sb << (backMode ? L"->" : L"  ") << L"球体モード: Rayの先端はカーソル上の球体を移動します (カメラを引くとRayはカメラに近いところに移動します)" << std::endl;
+	sb << L"  左ドラッグ、ホイールでデバッグカメラ" << std::endl;
 	m_batch->Begin();
 	m_font->DrawString(m_batch.get(), sb.str().c_str(), Vector3::Zero, Colors::White, 0, Vector3::Zero, Vector3(.5f));
 	m_batch->End();
