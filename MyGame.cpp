@@ -66,31 +66,9 @@ void MyGame::Update(GameContext& context)
 	m_pDebugCamera->update();
 	context.GetCamera().view = m_pDebugCamera->getViewMatrix();
 
-	if (Input::GetMouseButtonDown(Input::Buttons::MouseRight))
-		backMode = !backMode;
-	if (!backMode)
-	{
-		auto ray = context.GetCamera().ScreenPointToRay(Input::GetMousePosition());
-		auto plane = Plane(Vector3::Forward * BackscreenDistance, Vector3::Forward);
-		float dist;
-		if (ray.Intersects(plane, dist))
-		{
-			auto raypos = ray.position + ray.direction * dist;
-			raypos.Clamp(Vector3(-5, -5, -BackscreenDistance), Vector3(5, 5, -BackscreenDistance));
-			m_ray->posB = Vector3::Lerp(m_ray->posB, raypos, .1f);
-		}
-	}
-	else
-	{
-		auto ray = context.GetCamera().ScreenPointToRay(Input::GetMousePosition());
-		auto plane = BoundingSphere(Vector3::Zero, BacksphereRange);
-		float dist;
-		if (ray.Intersects(plane, dist))
-		{
-			auto raypos = ray.position + ray.direction * dist;
-			m_ray->posB = Vector3::Lerp(m_ray->posB, raypos, .1f);
-		}
-	}
+	auto ray = context.GetCamera().ScreenPointToRay(Input::GetMousePosition());
+	m_ray->posA = ray.position;
+	m_ray->posB = ray.position + ray.direction;
 
 	// オブジェクトの更新
 	for (auto& obj : m_objects)
@@ -102,20 +80,10 @@ void MyGame::Update(GameContext& context)
 void MyGame::Render(GameContext& context)
 {
 	m_pGridFloor->draw(context.GetDR().GetD3DDeviceContext(), context.GetCamera().view, context.GetCamera().projection);
-	if (!backMode)
-	{
-		m_pGridFloor->draw(context.GetDR().GetD3DDeviceContext(), context.GetCamera().view, context.GetCamera().projection, Colors::Turquoise, Matrix::CreateRotationX(XMConvertToRadians(90)) * Matrix::CreateTranslation(Vector3::Forward * BackscreenDistance));
-	}
-	else
-	{
-		static auto geo = GeometricPrimitive::CreateSphere(context.GetDR().GetD3DDeviceContext());
-		geo->Draw(Matrix::CreateScale(Vector3(BacksphereRange) * 2.f), context.GetCamera().view, context.GetCamera().projection, Colors::Turquoise, nullptr, true);
-	}
+
 	std::wostringstream sb;
 	sb << L"[操作方法]" << std::endl;
-	sb << L"  2つの操作モードがあり、右クリックで切り替えます" << std::endl;
-	sb << (!backMode ? L"->" : L"  ") << L"平面モード: Rayの先端はカーソル上の平面を移動します" << std::endl;
-	sb << (backMode ? L"->" : L"  ") << L"球体モード: Rayの先端はカーソル上の球体を移動します (カメラを引くとRayはカメラに近いところに移動します)" << std::endl;
+	sb << L"  マウスのレイと交差したオブジェクトがワイヤーフレームになります。" << std::endl;
 	sb << L"  左ドラッグ、ホイールでデバッグカメラ" << std::endl;
 	m_batch->Begin();
 	m_font->DrawString(m_batch.get(), sb.str().c_str(), Vector3::Zero, Colors::White, 0, Vector3::Zero, Vector3(.5f));
@@ -124,7 +92,7 @@ void MyGame::Render(GameContext& context)
 	// オブジェクトの描画
 	for (auto& obj : m_objects)
 		obj->Draw(context);
-	m_ray->Draw(context);
+	//m_ray->Draw(context);
 }
 
 void MyGame::Finalize(GameContext & context)

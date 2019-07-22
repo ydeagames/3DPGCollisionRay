@@ -11,7 +11,17 @@ DirectX::SimpleMath::Vector3 GameCamera::GetPosition() const
 
 DirectX::SimpleMath::Ray GameCamera::ScreenPointToRay(const DirectX::SimpleMath::Vector3& point) const
 {
-	return ViewportPointToRay(ScreenToViewportPoint(point));
+	auto pointNear = Vector3(point.x, point.y, 0.0f);
+	auto pointFar = Vector3(point.x, point.y, 1.0f);
+
+	auto inverseviewprojviewport = (view * projection * viewport).Invert();
+	auto rayNear = Vector3::Transform(pointNear, inverseviewprojviewport);
+	auto rayFar = Vector3::Transform(pointFar, inverseviewprojviewport);
+	auto raySubtraction = rayFar - rayNear;
+	auto rayDirection = raySubtraction;
+	//rayDirection.Normalize();
+
+	return Ray(Vector3(rayNear), Vector3(rayDirection));
 }
 
 DirectX::SimpleMath::Ray GameCamera::ViewportPointToRay(const DirectX::SimpleMath::Vector3& point) const
@@ -24,7 +34,7 @@ DirectX::SimpleMath::Ray GameCamera::ViewportPointToRay(const DirectX::SimpleMat
 	auto rayFar = Vector3::Transform(pointFar, inverseviewproj);
 	auto raySubtraction = rayFar - rayNear;
 	auto rayDirection = raySubtraction;
-	rayDirection.Normalize();
+	//rayDirection.Normalize();
 
 	return Ray(Vector3(rayNear), Vector3(rayDirection));
 }
